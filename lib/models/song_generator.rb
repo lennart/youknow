@@ -17,7 +17,134 @@ class SongGeneratorError < RuntimeError
   end
 end
 
+
 class SongGenerator
+  GENRES = ["Blues ",
+"Classic Rock",
+"Country",
+"Dance",
+"Disco",
+"Funk",
+"Grunge",
+"Hip-Hop",
+"Jazz",
+"Metal",
+"New Age",
+"Oldies",
+"Other",
+"Pop",
+"R&B",
+"Rap",
+"Reggae",
+"Rock",
+"Techno",
+"Industrial",
+"Alternative",
+"Ska",
+"Death Metal",
+"Pranks",
+"Soundtrack",
+"Euro-Techno",
+"Ambient",
+"Trip-Hop",
+"Vocal",
+"Jazz+Funk",
+"Fusion",
+"Trance",
+"Classical",
+"Instrumental",
+"Acid",
+"House",
+"Game",
+"Sound Clip",
+"Gospel",
+"Noise",
+"Alternative Rock",
+"Bass",
+"Soul",
+"Punk",
+"Space",
+"Meditative",
+"Instrumental Pop",
+"Instrumental Rock",
+"Ethnic",
+"Gothic",
+"Darkwave",
+"Techno-Industrial",
+"Electronic",
+"Pop-Folk",
+"Eurodance",
+"Dream",
+"Southern Rock",
+"Comedy",
+"Cult",
+"Gangsta",
+"Top 40",
+"Christian Rap",
+"Pop/Funk",
+"Jungle",
+"Native American",
+"Cabaret",
+"New Wave",
+"Psychadelic",
+"Rave",
+"Showtunes",
+"Trailer",
+"Lo-Fi",
+"Tribal",
+"Acid Punk",
+"Acid Jazz",
+"Polka",
+"Retro",
+"Musical",
+"Rock & Roll",
+"Hard Rock",
+"Folk",
+"Folk-Rock",
+"National Folk",
+"Swing",
+"Fast Fusion",
+"Bebob",
+"Latin",
+"Revival",
+"Celtic",
+"Bluegrass",
+"Avantgarde",
+"Gothic Rock",
+"Progressive Rock",
+"Psychedelic Rock",
+"Symphonic Rock",
+"Slow Rock",
+"Big Band",
+"Chorus",
+"Easy Listening",
+"Acoustic",
+"Humour",
+"Speech",
+"Chanson",
+"Opera",
+"Chamber Music",
+"Sonata",
+"Symphony",
+"Booty Bass",
+"Primus",
+"Porn Groove",
+"Satire",
+"Slow Jam",
+"Club",
+"Tango",
+"Samba",
+"Folklore",
+"Ballad",
+"Power Ballad",
+"Rhythmic Soul",
+"Freestyle",
+"Duet",
+"Punk Rock",
+"Drum Solo",
+"A capella",
+"Euro-House",
+"Dance Hall"]
   class << self
     def add_song(file)
       puts "GO"
@@ -48,6 +175,14 @@ class SongGenerator
       return song.id
     end
 
+    def genre_name_from_code(string)
+      if match = string.match(/\(([0-9]+)\)/)
+        GENRES[match.captures.first.to_i]
+      else
+        string
+      end
+    end
+
     def check_id3_tag(tag)
       raise SongGeneratorError.new({:missing => :all}) if tag.empty?
       raise SongGeneratorError.new({:missing => :album}) if (title = tag.album).nil?
@@ -71,7 +206,7 @@ class SongGenerator
                  a.lyrics = tag.lyrics
                end
                if tag.genre
-                 a.tags = [tag.genre]
+                 a.tags = [genre_name_from_code(tag.genre)]
                end
                audiofile = create_attachment(file)
                a.audiofiles = [audiofile.id]
@@ -115,9 +250,9 @@ class SongGenerator
       artwork_tag = if (apic = tag.select {|k| k[:id] == :APIC }).size > 0
                       apic
                     end
-          puts "Checking Artwork"
+      puts "Checking Artwork"
       if artwork_tag
-          puts "Has Artwork"
+        puts "Has Artwork"
         artwork = OpenStruct.new
         artwork.data = artwork_tag.first[:data]
         artwork.mimetype = artwork_tag.first[:mimetype]
