@@ -9,11 +9,17 @@ module DuckTypedDesignDoc
       end
     end
   end
+
   module ClassMethods 
     include CouchRest::Mixins::DesignDoc::ClassMethods
 
     def ducktype_traits(*traits)
+      puts "Will be used #{traits}"
       @traits = traits.map { |t| t.to_sym }
+    end
+
+    def ducktype_traits_js(other_traits = [])
+      (other_traits + @traits).map {|t| "doc['#{t.to_s}']"}.join " && "
     end
 
     def default_design_doc
@@ -23,7 +29,7 @@ module DuckTypedDesignDoc
           "views" => {
           'all' => {
           'map' => "function(doc) {
-                  if (#{@traits.map {|t| "doc['#{t.to_s}']"}.join " && "}) {
+                  if (#{ducktype_traits_js}) {
                     emit(doc['_id'],1);
                   }
                 }"

@@ -1,10 +1,11 @@
 require 'ostruct'
+require 'id3lib'
 configure :integration do
   Config = OpenStruct.new(
     :title => 'a name for your blog',
     :author => 'Joel Tulloch',
     :url_base => 'http://localhost:5984',
-    :database_name => 'scanty_integration',
+    :database_name => 'media_integration',
     :url_base_database => nil,
     :ping_services => 'ping.xml',  #relative to /config
     :log_folder => 'logs', #will be placed in the application root		
@@ -20,7 +21,7 @@ configure :development do
     :title => 'a name for your blog',
     :author => 'Joel Tulloch',
     :url_base => 'http://localhost:5984',
-    :database_name => 'scanty_dev',
+    :database_name => 'media_dev',
     :url_base_database => nil,
     :ping_services => 'ping.xml',  #relative to /config
     :log_folder => 'logs', #will be placed in the application root		
@@ -36,7 +37,7 @@ configure :test do
     :title => 'My blog',
     :author => 'Anonymous Coward',
     :url_base => 'http://localhost:5984',
-    :database_name => 'scanty_test',
+    :database_name => 'media_test',
     :url_base_database => nil,
     :ping_services => 'ping.xml',  #relative to /config
     :log_folder => 'logs', #will be placed in the application root		
