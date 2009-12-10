@@ -13,4 +13,4 @@ gem "cucumber", :only => :test
 gem "timecop", :only => :test
 gem "mocha", :only => :test
 gem "capybara" , :only => :test, :version => ">= 0.1.1"
-gem "shared-mime-info"
+gem "shared-mime-info", :git => "git://github.com/hanklords/shared-mime-info.git"
