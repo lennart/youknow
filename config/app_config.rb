@@ -47,3 +47,6 @@ configure :test do
     :disqus_shortname => nil
   )
 end
+configure do
+  Config.database = CouchRest.new(Config.url_base).database!(Config.database_name)
+end
