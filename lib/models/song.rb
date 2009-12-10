@@ -1,5 +1,5 @@
 class Song < CouchRest::ExtendedDocument
-  use_database ::Config.database
+  use_database ::SiteConfig.database
   include DuckTypedDesignDoc
   include CouchRest::Validation
   property :title

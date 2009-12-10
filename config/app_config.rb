@@ -1,7 +1,7 @@
 require 'ostruct'
 require 'id3lib'
 configure :integration do
-  Config = OpenStruct.new(
+  SiteConfig = OpenStruct.new(
     :title => 'a name for your blog',
     :author => 'Joel Tulloch',
     :url_base => 'http://localhost:5984',
@@ -17,7 +17,7 @@ configure :integration do
 end
 configure :development do
 
-  Config = OpenStruct.new(
+  SiteConfig = OpenStruct.new(
     :title => 'a name for your blog',
     :author => 'Joel Tulloch',
     :url_base => 'http://localhost:5984',
@@ -33,7 +33,7 @@ configure :development do
 end
 
 configure :test do
-  Config = OpenStruct.new(
+  SiteConfig = OpenStruct.new(
     :title => 'My blog',
     :author => 'Anonymous Coward',
     :url_base => 'http://localhost:5984',
@@ -48,5 +48,5 @@ configure :test do
   )
 end
 configure do
-  ::Config.database = CouchRest.new(::Config.url_base).database!(::Config.database_name)
+  ::SiteConfig.database = CouchRest.new(::SiteConfig.url_base).database!(::SiteConfig.database_name)
 end
