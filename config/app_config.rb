@@ -48,5 +48,5 @@ configure :test do
   )
 end
 configure do
-  ::SiteConfig.database = CouchRest.new(::SiteConfig.url_base).database!(::SiteConfig.database_name)
+  SiteConfig.database = CouchRest.new(SiteConfig.url_base).database!(SiteConfig.database_name)
 end
