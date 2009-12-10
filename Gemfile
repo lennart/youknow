@@ -1,7 +1,7 @@
 #vim: filetype=ruby
 gem "sinatra", :git => "git://github.com/sinatra/sinatra"
 gem "couchrest", :git => "git://github.com/jchris/couchrest"
-gem "sinatra-url-for", :require_as => "sinatra/url_for", :git => "git://github.com/emk/sinatra-url-for"
+gem "emk-sinatra-url-for", :require_as => "sinatra/url_for" 
 gem "sinatra-static-assets", :require_as => "sinatra/static_assets", :git => "git://github.com/lennart/sinatra-static-assets"
 gem "bcrypt-ruby", :require_as => "bcrypt"
 gem "uuid"
