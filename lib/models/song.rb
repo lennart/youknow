@@ -12,7 +12,7 @@ class Song < CouchRest::ExtendedDocument
   ducktype_traits :title, :written_by, :audiofiles
   validates_presence_of :title
 
-  view_by :title
+  view_by :title, :ducktype => true
   view_by :title_and_artist, :ducktype => true, :map => <<MAP
 function(doc) {
   if (#{ducktype_traits_js}) {
