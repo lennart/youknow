@@ -22,6 +22,19 @@ module DuckTypedDesignDoc
       (other_traits + @traits).map {|t| "doc['#{t.to_s}']"}.join " && "
     end
 
+     def view_by(*keys)
+          opts = keys.pop if keys.last.is_a?(Hash)
+          opts ||= {}
+          unless opts[:map]
+            opts[:guards] ||= []
+            opts[:guards].push "(#{ducktype_traits_js})"
+          end
+          keys.push opts
+          self.design_doc.view_by(*keys)
+          self.design_doc_fresh = false
+        end
+
+
     def default_design_doc
       if @traits.respond_to? :map
         {
