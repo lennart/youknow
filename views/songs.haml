@@ -1,5 +1,10 @@
-%h1="Listing #{songs.size} Songs"
-%ul#songs
-  -for song in songs
-    %li.song{ :id => song }
-      =song.title
+!!!
+%html
+  %head
+    %title="The incredible Song listing"
+%body
+  %h1="Listing #{songs.size} Songs"
+  %ul#songs
+    -for song in songs
+      %li.song{ :id => song }
+        =song.title
