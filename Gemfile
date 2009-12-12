@@ -1,4 +1,5 @@
 #vim: filetype=ruby
+gem "haml"
 gem "sinatra", :git => "git://github.com/sinatra/sinatra"
 gem "couchrest", :git => "git://github.com/jchris/couchrest"
 gem "emk-sinatra-url-for", :require_as => "sinatra/url_for" 
