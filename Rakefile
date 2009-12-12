@@ -10,5 +10,5 @@ end
 
 desc "Test with Cucumber+Watir"
 Cucumber::Rake::Task.new("cucumber") do |t|
-  t.cucumber_opts = %w{--format pretty features}
+  t.cucumber_opts = %w{-b --format pretty features}
 end

@@ -5,7 +5,7 @@ require File.join(File.dirname(__FILE__),*%w{.. config app_config})
 $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../lib')
 require 'main'
 def recreate_db
-  CouchRest.new(Config.url_base).database!(Config.database_name).recreate!
+  CouchRest.new(SiteConfig.url_base).database!(SiteConfig.database_name).recreate!
 end
 
 def log(msg)

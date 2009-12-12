@@ -1,7 +1,6 @@
 load 'models/song.rb'
 load 'models/album.rb'
 load 'models/artist.rb'
-load 'models/audiofile.rb'
 class SongGeneratorError < RuntimeError
   attr :reason
   def initialize(reason)
@@ -147,13 +146,11 @@ class SongGenerator
 "Dance Hall"]
   class << self
     def add_song(file)
-      puts "GO"
       metadata = {:filter => {}}
       threads = []
       file.open if file.kind_of? Tempfile
       tag = ID3Lib::Tag.new file.path
       check_id3_tag(tag)
-      puts "GO"
       threads << Thread.new(metadata) do |metadata|
         metadata[:filter][:album] = find_or_create_album_by_title(tag)
       end
@@ -185,11 +182,10 @@ class SongGenerator
 
     def check_id3_tag(tag)
       raise SongGeneratorError.new({:missing => :all}) if tag.empty?
-      raise SongGeneratorError.new({:missing => :album}) if (title = tag.album).nil?
-      raise SongGeneratorError.new({:missing => :tag}) if (name = tag.genre).nil? 
+      raise SongGeneratorError.new({:missing => :album}) if (title = tag.album) and tag.track.nil?
+#      raise SongGeneratorError.new({:missing => :tag}) if (name = tag.genre).nil? 
       raise SongGeneratorError.new({:missing => :artist}) if (name = tag.artist).nil? 
       raise SongGeneratorError.new({:missing => :title}) unless title = tag.title
-      raise SongGeneratorError.new({:missing => :track}) unless track_str = tag.track
     end
 
     def find_or_create_song_by_name(tag, metadata, file)
@@ -208,9 +204,8 @@ class SongGenerator
                if tag.genre
                  a.tags = [genre_name_from_code(tag.genre)]
                end
-               audiofile = create_attachment(file)
-               a.audiofiles = [audiofile.id]
                a.save
+               a.put_attachment "default", file.read, :content_type => "audio/mpeg"
                a
              else
                potential_songs.first

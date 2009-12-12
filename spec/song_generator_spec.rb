@@ -10,6 +10,7 @@ describe "A Song Generator" do
     @tag.title = "15 Step"
     @tag.album = "In Rainbows"
     @tag.artist = "Radiohead"
+    @tag.year = "2009"
     @tag.track = "1/12"
     @tag.genre = "Rock"
     @tag.update!
@@ -20,60 +21,60 @@ describe "A Song Generator" do
     FileUtils.rm(@tempfile_path)
   end
 
-  specify "should generate new song" do
-    artwork = if (apic = @tag.select {|k| k[:id] == :APIC }).size > 0
-                apic
-              end
-    log("Should generate new Song")
-    id = SongGenerator.add_song(@tempfile)
-    song = Song.get id
-    song.title.should == "15 Step"
-    log("has Title")
-    song.written_by.should_not be_nil
-    artist = Artist.get song.written_by.first
-    artist.should be_kind_of(Artist)
-    artist.name.should == "Radiohead"
-    log("has Artist")
-    song.appears_on_album.should_not be_nil
-    song.appears_on_album.should be_a_kind_of(Hash)
-    appearance = song.appears_on_album.first
-    appearance.last.should == 1
-    log("has Appearance on Album")
-    album = Album.get appearance.first
-    album.title.should == "In Rainbows"
-    album.attachment_url("cover").should_not be_nil 
-    log("has Album")
-    song.tags.should_not be_nil
-    song.tags.should be_a_kind_of(Array)
-    song.audiofiles.should_not be_nil
-    audiofile = Audiofile.get song.audiofiles.first
-    audiofile.attachment_url("attachment").should_not be_nil
+  context "generating a new Song" do
+    before(:each) do
+      id = SongGenerator.add_song(@tempfile)
+      @song = Song.get id
+    end
 
+    it "should add '15 Step' with artist, album and audiofile to the library" do
+      @song.title.should == "15 Step"
+      @song.written_by.size.should == 1
+      @song.appears_on_album.size.should == 1
+      @song.attachment_url("default").should_not be_nil
+    end
+
+    it "should appear on 'In Rainbows'" do
+      appearance = @song.appears_on_album.first
+      appearance.last.should == 1
+      album = Album.get appearance.first
+      album.title.should == "In Rainbows"
+      album.attachment_url("cover").should_not be_nil 
+    end
+
+    it "should be tagged with 'Rock'" do
+      @song.tags.should_not be_nil
+      @song.tags.should be_a_kind_of(Array)
+      @song.tags.first.should == "Rock"
+    end
+
+
+    it "should be written by 'Radiohead'" do
+      artist = Artist.get @song.written_by.first
+      artist.should be_kind_of(Artist)
+      artist.name.should == "Radiohead"
+    end
   end
 
   specify "should not generate song with missing artist" do
-    log("Should fail with missing artist")
     @tag.artist = nil
     @tag.update!
     lambda { SongGenerator.add_song(@tempfile) }.should raise_error(SongGeneratorError) { |error| error.reason[:missing].should == :artist }
   end
 
   specify "should not generate song with missing track number" do
-    log("Should fail with missing track number")
     @tag.track = nil
     @tag.update!
-    lambda { SongGenerator.add_song(@tempfile) }.should raise_error(SongGeneratorError) { |error| error.reason[:missing].should == :track }
+    lambda { SongGenerator.add_song(@tempfile) }.should raise_error(SongGeneratorError) { |error| error.reason[:missing].should == :album }
   end
 
   specify "should not generate song with missing title" do
-    log("Should fail with missing title")
     @tag.title = nil
     @tag.update!
     lambda { SongGenerator.add_song(@tempfile) }.should raise_error(SongGeneratorError) { |error| error.reason[:missing].should == :title }
   end
 
   specify "should not generate song with missing id3 tag" do
-    log("Should fail with missing id3 tag")
     @tag.strip!
     lambda { SongGenerator.add_song(@tempfile) }.should raise_error(SongGeneratorError) { |error| error.reason[:missing].should == :all }
   end

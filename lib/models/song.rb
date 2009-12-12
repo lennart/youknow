@@ -5,11 +5,10 @@ class Song < CouchRest::ExtendedDocument
   property :title
   property :appears_on_album, :default => []
   property :written_by, :default => []
-  property :audiofiles, :default => []
   property :lyrics
   property :tags, :default => []
 
-  ducktype_traits :title, :written_by, :audiofiles
+  ducktype_traits :title, :written_by 
   validates_presence_of :title
 
   view_by :title, :ducktype => true

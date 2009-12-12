@@ -7,10 +7,11 @@ gem "bcrypt-ruby", :require_as => "bcrypt"
 gem "uuid"
 gem "json"
 gem "rest-client"
-gem "rack-test", :only => :test, :require_as => "rack/test"
+gem "rack-test", :only => :test, :require_as => "rack/test" 
 gem "rspec", :only => :test
 gem "cucumber", :only => :test
 gem "timecop", :only => :test
 gem "mocha", :only => :test
 gem "capybara" , :only => :test, :version => ">= 0.1.1"
 gem "shared-mime-info", :git => "git://github.com/lennart/shared-mime-info.git"
+gem "curb", :git => "git://github.com/taf2/curb.git"
