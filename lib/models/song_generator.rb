@@ -149,7 +149,7 @@ class SongGenerator
       metadata = {:filter => {}}
       threads = []
       file.open if file.kind_of? Tempfile
-      tag = ID3Lib::Tag.new file.path
+      tag = TagLib2::File.new file.path
       check_id3_tag(tag)
       threads << Thread.new(metadata) do |metadata|
         metadata[:filter][:album] = find_or_create_album_by_title(tag)
@@ -181,26 +181,24 @@ class SongGenerator
     end
 
     def check_id3_tag(tag)
-      raise SongGeneratorError.new({:missing => :all}) if tag.empty?
-      raise SongGeneratorError.new({:missing => :album}) if (title = tag.album) and tag.track.nil?
+      raise SongGeneratorError.new({:missing => :album}) if not (title = tag.album).blank? and tag.track == 0
 #      raise SongGeneratorError.new({:missing => :tag}) if (name = tag.genre).nil? 
-      raise SongGeneratorError.new({:missing => :artist}) if (name = tag.artist).nil? 
-      raise SongGeneratorError.new({:missing => :title}) unless title = tag.title
+      raise SongGeneratorError.new({:missing => :artist}) if (name = tag.artist).blank? 
+      raise SongGeneratorError.new({:missing => :title}) if (title = tag.title).blank?
     end
 
     def find_or_create_song_by_name(tag, metadata, file)
       title = tag.title.strip
-      track_str = tag.track
-      track = track_str.split("/").first.to_i
+      track = tag.track
 
       potential_songs = Song.by_title_and_artist  :key => [title, metadata[:filter][:artist].id]
       song = if potential_songs.empty?
                a = Song.new  :title => title
                a.appears_on_album = { metadata[:filter][:album].id => track }
                a.written_by = [metadata[:filter][:artist].id]
-               if tag.lyrics
-                 a.lyrics = tag.lyrics
-               end
+#               if tag.lyrics
+#                 a.lyrics = tag.lyrics
+#               end
                if tag.genre
                  a.tags = [genre_name_from_code(tag.genre)]
                end
@@ -227,7 +225,7 @@ class SongGenerator
 
       album = if potential_albums.empty?
                 a = Album.new :title => title
-                a.release_date = tag.year ? Date.strptime(tag.year, "%Y") : Date.new
+                a.release_date = tag.year != 0 ? Date.strptime(tag.year.to_s, "%Y") : Date.new
                 puts "Release date set"
                 artwork = check_artwork(tag)
                 a.save
@@ -242,19 +240,16 @@ class SongGenerator
     end
 
     def check_artwork(tag)
-      artwork_tag = if (apic = tag.select {|k| k[:id] == :APIC }).size > 0
-                      apic
-                    end
       puts "Checking Artwork"
-      if artwork_tag
+      if tag.image_count > 0
         puts "Has Artwork"
         artwork = OpenStruct.new
-        artwork.data = artwork_tag.first[:data]
-        artwork.mimetype = artwork_tag.first[:mimetype]
+        artwork.data = tag.image(0).data
+        artwork.mimetype = tag.image(0).mimeType
 
         if artwork.mimetype.blank?
           tmpfile = Tempfile.new("artwork")
-          tmpfile.write artwork.data
+          tmpfile.write f.image(0).data
           puts "Checking Mimetype"
           mimetype = MIME.check_magics(tmpfile)
           if mimetype

@@ -1,6 +1,5 @@
 require File.join(File.dirname(__FILE__), *%w{.. .. config boot})
 Bundler.require_env :test
-require 'extensions/rack_test_extension.rb'
 Sinatra::Application.set :environment, :integration
 require File.join(File.dirname(__FILE__),*%w{.. .. config app_config})
 app_file = File.join(File.dirname(__FILE__), *%w{.. .. main.rb}) 

@@ -1,0 +1,4 @@
+%h1="Search Music:"
+%form{ :method => :post, :action => url_for("/search") }
+  %input{ :type => "text", :id => "query", :name => "query"}
+  %input{ :type => "submit", :value => "Search"}

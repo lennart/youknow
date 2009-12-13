@@ -14,7 +14,6 @@ module DuckTypedDesignDoc
     include CouchRest::Mixins::DesignDoc::ClassMethods
 
     def ducktype_traits(*traits)
-      puts "Will be used #{traits}"
       @traits = traits.map { |t| t.to_sym }
     end
 

@@ -11,6 +11,8 @@ class ModularApplication < Sinatra::Base
 
   load 'actions/song.rb'
   register SongActions
+  load 'actions/search.rb'
+  register SearchActions
 
   enable :xhtml
   enable :sessions

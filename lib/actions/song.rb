@@ -4,14 +4,16 @@ module SongActions
   def self.registered(app)
     app.instance_eval do
       post '/songs/?' do
-        tempfile = Tempfile.new((rand*10000).to_s)
-        tempfile.write request.body.read
-        tempfile.close
+        path = ::File.join(::File.dirname(__FILE__), "..","..","tmp",(rand*10000).to_s+".mp3")
+        tempfile = ::File.open(path, "wb") do |f|
+          f.write request.body.read
+        end
         begin
-          { "id" => SongGenerator.add_song(tempfile)}.to_json
+          { "id" => SongGenerator.add_song(File.new(path,"r"))}.to_json
         rescue SongGeneratorError => e
           return e.reason.to_json
         end
+
       end
 
       delete '/songs/:id' do
