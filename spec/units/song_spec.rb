@@ -1,4 +1,3 @@
-require File.join(File.dirname(__FILE__), "base")
 describe "A Song" do
   before do
     @song = Song.new :title => "15 Step"

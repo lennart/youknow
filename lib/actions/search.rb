@@ -9,6 +9,7 @@ module SearchActions
       post "/search" do
         limit = params[:limit] ? params[:limit] : 4
         results = Search.query(params[:query],limit)
+        puts "Results: #{results.to_yaml}"
         haml :search_results, {}, :results => results
       end
     end

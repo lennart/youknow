@@ -2,4 +2,11 @@
 %ul#results
   -results.each do |result|
     %li
-      =link_to(result.title, result.url)
+      %a{ :href => "#", :onClick => "addToDownloadQueue('#{url_for("/downloader/")}', '#{result.video_id}');" }
+        =result.title 
+      #video
+        %embed{ :src => result.embed_url }
+      %ul.formats
+        - if result.respond_to? :available_streams
+          - result.available_streams.each do |stream_id, stream_url|
+            %li=YouTubeVideo.format_name stream_id

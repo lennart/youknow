@@ -11,3 +11,7 @@ end
 def log(msg)
   puts msg
 end
+Spec::Runner.configure do |config|
+  config.mock_with :mocha
+end
+

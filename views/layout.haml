@@ -3,6 +3,8 @@
     %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "content-type" }
     %title
       = @title || "media and stuff"
+    =javascript_script_tag "/javascripts/prototype.js"
+    =javascript_script_tag "/javascripts/application.js"
   %body
     #content
       =yield

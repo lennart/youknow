@@ -1,10 +1,8 @@
-require File.join(File.dirname(__FILE__),*%w{vendor gems environment})
-Bundler.require_env
-$LOAD_PATH.unshift(File.dirname(__FILE__) + '/lib')
 
 class ModularApplication < Sinatra::Base
   load 'extensions/couchrest_ducktyped_design_doc.rb'
   load 'models/album.rb'
+  load 'workers/downloader.rb'
   helpers Sinatra::UrlForHelper
 
   register Sinatra::StaticAssets
@@ -40,6 +38,13 @@ class ModularApplication < Sinatra::Base
     Album.with_tracks(id)
   end
 
-
+  post '/downloader/?' do
+    video = YouTubeVideo.by_video_id(:key => params[:video_id]).first
+    if video
+      video.download_best_video
+    else
+      halt [404, "Couldn't find Video with this ID"]
+    end
+  end
 
 end
