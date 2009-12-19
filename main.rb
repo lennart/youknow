@@ -1,8 +1,5 @@
 
 class ModularApplication < Sinatra::Base
-  load 'extensions/couchrest_ducktyped_design_doc.rb'
-  load 'models/album.rb'
-  load 'workers/downloader.rb'
   helpers Sinatra::UrlForHelper
 
   register Sinatra::StaticAssets
@@ -39,12 +36,14 @@ class ModularApplication < Sinatra::Base
   end
 
   post '/downloader/?' do
-    video = YouTubeVideo.by_video_id(:key => params[:video_id]).first
-    if video
-      video.download_best_video
-    else
-      halt [404, "Couldn't find Video with this ID"]
-    end
+    meta = Metadata.new JSON.parse(params[:blip])
+    convert = params[:convert_to_audio]
+    BlipFM.download_blip(meta, convert)
+    return {"result" => "ok"}.to_json
+  end
+
+  get "/blip/:username/?" do |user|
+    haml :blip, {}, :blips => BlipFM.with_blips(user)
   end
 
 end

@@ -1,7 +1,3 @@
-load 'models/song.rb'
-load 'models/album.rb'
-load 'models/artist.rb'
-load 'models/metadata.rb'
 class SongGeneratorError < RuntimeError
   attr :reason
   def initialize(reason)
@@ -21,29 +17,50 @@ class SongGenerator
   class << self
     def add_song(file, tag, morph_source = nil)
       raise SongGeneratorError.new({:missing => :all}) unless tag.kind_of? Metadata
-      metadata = {:filter => {}}
-      threads = []
       file.open if file.kind_of? Tempfile
-      check_metadata(tag)
-      unless tag.album.blank? or tag.track == 0
-        threads << Thread.new(metadata) do |metadata|
-          metadata[:filter][:album] = find_or_create_album_by_title(tag)
-        end
-      end
-
-      threads << Thread.new(metadata) do |metadata|
-        metadata[:filter][:artist] = find_or_create_artist_by_name(tag)
-      end
+      threads, metadata = prepare_for_import(tag)
       begin
         threads.each { |t| t.join }
       rescue SongGeneratorError => e
         raise e
       end
 
-      song = find_or_create_song_by_name(tag, metadata, file, morph_source)
+      song = find_or_create_song_by_name(tag, metadata, morph_source) do
+        file
+      end
       return song.id
     end
 
+    def add_song_from_url(url, tag)
+      raise SongGeneratorError.new({:missing => :all}) unless tag.kind_of? Metadata
+      threads, metadata = prepare_for_import(tag)
+      begin
+        threads.each { |t| t.join }
+      rescue SongGeneratorError => e
+        raise e
+      end
+  
+      path = ::File.join(SINATRA_ROOT,"tmp","#{UUID.generate :compact}.mp3")
+
+      song = find_or_create_song_by_name(tag, metadata) do
+        CurbToCouch.download url, path
+      end
+      return song.id
+    end
+
+    def prepare_for_import tag, threads = [], metadata = OpenStruct.new(:filter => OpenStruct.new)
+      check_metadata(tag)
+      unless tag.album.blank? or tag.track == 0
+        threads << Thread.new(metadata) do |metadata|
+          metadata.filter.album = find_or_create_album_by_title(tag)
+        end
+      end
+
+      threads << Thread.new(metadata) do |metadata|
+        metadata.filter.artist = find_or_create_artist_by_name(tag)
+      end
+      [threads, metadata]
+    end
 
     def check_metadata(tag)
       raise SongGeneratorError.new({:missing => :album}) if not (title = tag.album).blank? and tag.track == 0
@@ -51,11 +68,11 @@ class SongGenerator
       raise SongGeneratorError.new({:missing => :title}) if (title = tag.title).blank?
     end
 
-    def find_or_create_song_by_name(tag, metadata, file, morph_source = nil)
+    def find_or_create_song_by_name(tag, metadata, morph_source = nil)
       title = tag.title.strip
       track = tag.track
 
-      potential_songs = Song.by_title_and_artist  :key => [title, metadata[:filter][:artist].id]
+      potential_songs = Song.by_title_and_artist  :key => [title, metadata.filter.artist.id]
       song = if potential_songs.empty?
                if morph_source.respond_to? :morph_to
                  a = morph_source.morph_to(Song)
@@ -63,22 +80,30 @@ class SongGenerator
                else
                  a = Song.new  :title => title
                end
-               a.appears_on_album = { metadata[:filter][:album].id => track } if track
-               a.written_by = [metadata[:filter][:artist].id]
+               a.appears_on_album = { metadata.filter.album.id => track } if track
+               a.written_by = [metadata.filter.artist.id]
                if tag.genre
-                 a.tags = [tag.genre]
+                 a.tags ||= []
+                 if tag.genre.kind_of?(Array)
+                 a.tags.concat tag.genre
+                 else
+                   a.tags << tag.genre
+                 end
+                 a.tags.uniq!
                end
                raise SongGeneratorError.new({:missing => :all}) unless a.save
-               a.put_attachment "audio/default", file.read, :content_type => "audio/mpeg"
+               unless a.has_attachment?("audio/default")
+                 data = yield 
+                 a.put_attachment "audio/default", data.read, :content_type => "audio/mpeg"
+               end
                a
              else
                song = potential_songs.first
                unless song.appears_on_album
-                 song.appears_on_album = { metadata[:filter][:album].id => track } if track
+                 song.appears_on_album = { metadata.filter.album.id => track } if track
                else
-                 song.appears_on_album[metadata[:filter][:album].id] = track if track and metadata[:filter][:album].id
+                 song.appears_on_album[metadata.filter.album.id] = track if track and metadata.filter.album.id
                end
-
              end
       song
     end

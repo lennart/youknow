@@ -1,4 +1,3 @@
-require File.join(File.dirname(__FILE__), "..", "spec_helper")
 describe "A YouTube Video" do
   before :all do
     client = YouTubeG::Client.new
@@ -44,8 +43,8 @@ describe "A YouTube Video" do
   end
 
   it "should enqueue a job to resque for downloading" do
-    Resque.expects(:enqueue).with(kind_of(Module),kind_of(YouTubeVideo),kind_of(String),kind_of(Hash)).returns(true)
-    video = YouTubeVideo.new :video_id => @video_result_id
+    Resque.expects(:enqueue).with(kind_of(Module),kind_of(Array)).returns(true)
+    video = YouTubeVideo.new :video_id => @video_result_id, :title => "Blablablas"
     video.download_best_video
   end
 end

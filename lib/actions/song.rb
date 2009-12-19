@@ -4,12 +4,8 @@ module SongActions
   def self.registered(app)
     app.instance_eval do
       post '/songs/?' do
-        path = ::File.join(::File.dirname(__FILE__), "..","..","tmp",(rand*10000).to_s+".mp3")
-        tempfile = ::File.open(path, "wb") do |f|
-          f.write request.body.read
-        end
         begin
-          { "id" => SongGenerator.add_song(File.new(path,"r"))}.to_json
+          { "id" => SongGenerator.add_song(params["_attachments"][:tempfile], Metadata.new(JSON.parse(params["_doc"])))}.to_json
         rescue SongGeneratorError => e
           return e.reason.to_json
         end
@@ -23,6 +19,19 @@ module SongActions
       get '/songs/?' do
         songs = Song.all
         haml :songs, {}, :songs => songs
+      end
+
+      get '/songs.m3u' do
+        songs = Song.all
+        content_type = "audio/x-mpegurl"
+        ["#EXTM3U"].concat(songs.map do |song|
+          if song.has_attachment? "audio/default"
+            artist = Artist.get song.written_by.first
+            url = song.attachment_url "audio/default"
+            ["#EXTINF:#{song["duration"] ? song["duration"] : -1},#{artist.name},#{song.title}",url.gsub(/\A#{song.database.to_s}/, SiteConfig.host_url+"/"+SiteConfig.database_name)]
+          end
+        end).flatten.compact.join("\n")
+
       end
     end
   end

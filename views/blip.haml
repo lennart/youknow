@@ -1,0 +1,15 @@
+%ul#blips
+  -blips.each do |blip|
+    %li.blip
+      %span.headline=[blip.artist,blip.title].compact.join(" - ")
+      %script{:type => "text/javascript"}
+        ="var blip_#{blip.blip_id} = #{blip.to_json};"
+      .meta
+        -if blip.source == "YouTube"
+          %a{ :href => "#", :onClick => "download('#{url_for("/downloader/")}', blip_#{blip.blip_id});" }
+            Download Video
+          %a{ :href => "#", :onClick => "downloadAndConvert('#{url_for("/downloader/")}', blip_#{blip.blip_id});" }
+            Download Video and add as Song
+        -elsif blip.source == "HTTP"
+          %a{ :href => "#", :onClick => "download('#{url_for("/downloader/")}', blip_#{blip.blip_id});" }
+            Download Song

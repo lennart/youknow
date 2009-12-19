@@ -2,7 +2,7 @@
 %ul#results
   -results.each do |result|
     %li
-      %a{ :href => "#", :onClick => "addToDownloadQueue('#{url_for("/downloader/")}', '#{result.video_id}');" }
+      %a{ :href => "#", :onClick => "addVideo('#{url_for("/downloader/")}', #{result.to_json});" }
         =result.title 
       #video
         %embed{ :src => result.embed_url }

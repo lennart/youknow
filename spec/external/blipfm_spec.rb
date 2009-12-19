@@ -2,6 +2,7 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 require 'models/blipfm'
 describe "The BlipFM Sync" do
   before do
+    recreate_db
     @song_url = "http://walrusmusicblog.com/wp-content/uploads/2009/09/07-Plain-Material-1.mp3"
     @youtube_video_id = "QB0ordd2nOI"
     @list_of_blips = [
@@ -53,9 +54,11 @@ describe "The BlipFM Sync" do
     json = {"result" => {"collection" => {"Blip" => @list_of_blips}}}
     easy = stub_everything(:body_str => some_json_string)
     Curl::Easy.expects(:perform).with(@blip_profile_url).returns(easy)
+
     JSON.expects(:parse).with(some_json_string).returns(json)
-    Resque.expects(:enqueue).with(::Downloader,kind_of(YouTubeVideo),kind_of(String),kind_of(Hash))
-    Resque.expects(:enqueue).with(::Downloader,kind_of(String),kind_of(String),kind_of(Hash))
+    youtube_video = stub_everything(:download_best_video => true)
+    YouTubeVideo.expects(:by_video_id).with(:key => @youtube_video_id).returns([youtube_video])
+    Resque.expects(:enqueue).with(::SongImporter,kind_of(Array))
     BlipFM.sync("lmaa")
   end
 end

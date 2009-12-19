@@ -21,10 +21,51 @@ describe "A Song Generator" do
     FileUtils.rm(@tempfile_path)
   end
 
-  context "generating a new Song" do
+  context "generating a new Song from File" do
     before(:each) do
       id = SongGenerator.add_song(@tempfile, @tag)
       @song = Song.get id
+    end
+
+    it "should add '15 Step' with artist, album and audiofile to the library" do
+      @song.title.should == "15 Step"
+      @song.written_by.size.should == 1
+      @song.appears_on_album.size.should == 1
+      @song.attachment_url("audio/default").should_not be_nil
+    end
+
+    it "should appear on 'In Rainbows'" do
+      appearance = @song.appears_on_album.first
+      appearance.last.should == 1
+      album = Album.get appearance.first
+      album.title.should == "In Rainbows"
+#      album.attachment_url("cover").should_not be_nil 
+    end
+
+    it "should be tagged with 'Rock'" do
+      @song.tags.should_not be_nil
+      @song.tags.should be_a_kind_of(Array)
+      @song.tags.first.should == "Rock"
+    end
+
+
+    it "should be written by 'Radiohead'" do
+      artist = Artist.get @song.written_by.first
+      artist.should be_kind_of(Artist)
+      artist.name.should == "Radiohead"
+    end
+  end
+
+  context "generating a Song from URL" do
+    before do
+      url = "http://somewhere.lost-in-spa.ce/nofile.mp3"
+      CurbToCouch.expects(:download).with(url,kind_of(String)).returns(@tempfile)
+      id = SongGenerator.add_song_from_url(url,@tag)
+      @song = Song.get id
+    end
+
+    it "should add the Song to the library" do
+      @song.should be_kind_of(Song)
     end
 
     it "should add '15 Step' with artist, album and audiofile to the library" do
@@ -62,16 +103,18 @@ describe "A Song Generator" do
       @video = YouTubeVideo.new :video_id => @youtube_video_id
       @video.save
       @id = @video.id
-      puts "ID: #{@id}"
       @tag.album = ""
       @tag.track = 0
-      id = SongGenerator.add_song(@tempfile,@tag,@video)
-      puts "ID: #{@id}"
-      @youtube_song = Song.get id
+      @song_id = SongGenerator.add_song(@tempfile,@tag,@video)
+      @youtube_song = Song.get @song_id
     end
     it "should still find the YouTubeVideo" do
       video = YouTubeVideo.get @id
       video.video_id.should == @youtube_video_id
+    end
+
+    it "should use same document for Song" do
+      @song_id.should == @youtube_video_id
     end
 
     it "should have added artist 'Radiohead'" do

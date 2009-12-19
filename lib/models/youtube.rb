@@ -8,17 +8,20 @@ YOUTUBE_FLV=34
 YOUTUBE_FLV_MONO=5
 YOUTUBE_FLV_STEREO=6
 YOUTUBE_3GP=17
-YOUTUBE_STREAM_NAMES = {37 => "mp4@1080p", 22 => "mp4@720p", 18 => "mp4", 34 => "flv", 35 => "flv@480p", 17 => "3gp", 5 => "flv#mono", 6 => "flv#stereo" }
+YOUTUBE_STREAM_NAMES = {37 => "mp4@1080p", 22 => "mp4@720p", 18 => "mp4", 34 => "flv", 35 => "flv@480p", 17 => "3gp", 5 => "flv#22.05Khz", 6 => "flv#44.1Khz" }
 load 'models/search_result.rb'
 class YouTubeStreamMissingError < RuntimeError
 end
 class YouTubeVideo < SearchResult
   ducktype_traits :title, :embed_url, :duration, :available_streams
   include MorphableDocument
+  include CouchRest::Validation
+  include Guessing
   property :deep_links_expire_at, :cast_as => 'Time'
   property :available_streams, :default => {}
 
   view_by :video_id, :ducktype => true
+  validates_presence_of :title, :embed_url, :duration, :video_id
 
   def self.format_name(id)
     YOUTUBE_STREAM_NAMES[id.to_i]
@@ -54,9 +57,25 @@ class YouTubeVideo < SearchResult
     self["deep_links_expire_at"] = Time.at new_age.to_i
   end
 
-  def deep_link
+  def format_id_for_name format_name
+    YOUTUBE_STREAM_NAMES.select do |id, name|
+      name == format_name
+    end.first.first
+  end
+
+  def deep_link format = nil
     update_volatile_properties if Time.now.to_i >= deep_links_expire_at
-    available_streams[best_format]
+    if format
+      format_id = format.is_a?(Integer) ? format : format_id_for_name(format)
+      puts "Format ID: #{format_id}"
+      if available_streams.has_key? format_id
+        available_streams[format_id]
+      else
+        raise "Format #{format} not available"
+      end
+    else
+      available_streams[best_format]
+    end
   end
 
   def best_format_name
@@ -79,6 +98,7 @@ class YouTubeVideo < SearchResult
   def parse_expire(url)
     URI.unescape((URI.parse url).query) =~ /expire=([0-9]+)&/
       self.deep_links_expire_at = $1
+    save
   end
 
   def update_volatile_properties
@@ -94,7 +114,6 @@ class YouTubeVideo < SearchResult
         stream_format, stream_url = str.split "|"
         available_streams[stream_format.to_i] = stream_url
       end
-      puts "Streams: #{available_streams.to_yaml}"
       # Set Expiry Time to the expire Timestamp of the first stream url
       parse_expire available_streams.first.last
     else 
@@ -103,13 +122,21 @@ class YouTubeVideo < SearchResult
   end
 
   def download_best_video options = {}
-    options["convert_to_audio"] ||= false
+    download_video best_format, options
+  end
+
+  def download_video format, options = {}
+    format = format.is_a?(Integer) ? YOUTUBE_STREAM_NAMES[format] : format
+    options[:metadata] = guess_best_metadata(options[:metadata] || Metadata.new(:title => title))
+    options[:convert_to_audio] ||= false
+    options[:format] = format 
     source = self
-    destination = ::File.join(SINATRA_ROOT,"tmp","#{UUID.generate :compact}.mp4")
+    destination = ::File.join(SINATRA_ROOT,"tmp","#{UUID.generate :compact}.#{format[0..2]}")
     Resque.enqueue(::Downloader,[source,destination,options])
   end
 
   private 
+
 
   def make_snip quality, video_id, hash
     return "/get_video?fmt=#{quality}&video_id=#{video_id}&t=#{hash}"

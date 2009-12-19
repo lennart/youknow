@@ -11,7 +11,6 @@ class SearchResult < CouchRest::ExtendedDocument
   property :embed_url
   property :video_id
   property :source
-  property :format_ids, :default => []
 
   ducktype_traits :title, :embed_url, :duration
 

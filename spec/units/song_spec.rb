@@ -1,5 +1,6 @@
 describe "A Song" do
   before do
+    recreate_db
     @song = Song.new :title => "15 Step"
   end
 

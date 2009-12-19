@@ -1,8 +1,4 @@
-
 class Search
-  load 'models/youtube.rb'
-  load 'models/search_result.rb'
-  load 'models/ferret_search.rb'
   class << self
     def query string, limit
       results = query_database(string, limit)
@@ -50,10 +46,7 @@ class Search
           :date => result.created_at.to_i.to_s
         }
       end
-      puts index.to_yaml
 
-      catalogue_collector = CatalogueCollector.new
-      #      puts "Cache: #{catalogue_collector.instance_variable_get("@catalogue_cache").to_yaml}"
       results = []
 
       counter = 0

@@ -4,8 +4,9 @@ configure :integration do
   SiteConfig = OpenStruct.new(
     :title => 'a name for your blog',
     :author => 'Joel Tulloch',
-    :url_base => 'http://localhost:5984',
+    :couchdb_host => 'http://localhost:5984',
     :database_name => 'media_integration',
+    :host_url => "http://localhost",
     :url_base_database => nil,
     :ping_services => 'ping.xml',  #relative to /config
     :log_folder => 'logs', #will be placed in the application root		
@@ -20,7 +21,8 @@ configure :development do
   SiteConfig = OpenStruct.new(
     :title => 'a name for your blog',
     :author => 'Joel Tulloch',
-    :url_base => 'http://localhost:5984',
+    :couchdb_host => 'http://localhost:5984',
+    :host_url => "http://aludose",
     :database_name => 'media_dev',
     :url_base_database => nil,
     :ping_services => 'ping.xml',  #relative to /config
@@ -36,7 +38,8 @@ configure :test do
   SiteConfig = OpenStruct.new(
     :title => 'My blog',
     :author => 'Anonymous Coward',
-    :url_base => 'http://localhost:5984',
+    :couchdb_host => 'http://localhost:5984',
+    :host_url => "http://aludose",
     :database_name => 'media_test',
     :url_base_database => nil,
     :ping_services => 'ping.xml',  #relative to /config
@@ -48,5 +51,6 @@ configure :test do
   )
 end
 configure do
-  SiteConfig.database = CouchRest.new(SiteConfig.url_base).database!(SiteConfig.database_name)
+  SiteConfig.database = CouchRest.new(SiteConfig.couchdb_host).database!(SiteConfig.database_name)
 end
+include MainHelper

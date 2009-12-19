@@ -31,7 +31,7 @@ namespace :spec do
     s.spec_files = FileList["spec/**/*_spec.rb"]
   end
 end
-desc "Test with Cucumber+Watir"
+desc "Test with Cucumber"
 Cucumber::Rake::Task.new("cucumber") do |t|
   t.cucumber_opts = %w{--format pretty features}
 end
