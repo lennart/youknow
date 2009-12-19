@@ -50,6 +50,22 @@ configure :test do
     :disqus_shortname => nil
   )
 end
+configure :production do
+  SiteConfig = OpenStruct.new(
+    :title => 'My blog',
+    :author => 'Anonymous Coward',
+    :couchdb_host => 'http://10.23.41.3:5984',
+    :host_url => "http://dude",
+    :database_name => 'media_production',
+    :url_base_database => nil,
+    :ping_services => 'ping.xml',  #relative to /config
+    :log_folder => 'logs', #will be placed in the application root		
+    :admin_password => 'changethis',
+    :admin_cookie_key => 'admin_cookie_key',
+    :admin_cookie_value => '54l976913ace58',
+    :disqus_shortname => nil
+  )
+end
 configure do
   SiteConfig.database = CouchRest.new(SiteConfig.couchdb_host).database!(SiteConfig.database_name)
 end
