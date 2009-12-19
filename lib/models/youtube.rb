@@ -86,8 +86,8 @@ class YouTubeVideo < SearchResult
     return @best_format if @best_format
     best_format = YOUTUBE_FLV_MONO
     formats.each do |format|
-      if available_streams.has_key? format
-        best_format = format
+      if available_streams.has_key? format.to_s
+        best_format = format.to_s
         break
       end
     end
