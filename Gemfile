@@ -7,7 +7,7 @@ gem "youtube-g", :require_as => "youtube_g", :git => "git://github.com/tmm1/yout
 gem "sinatra-static-assets", :require_as => "sinatra/static_assets", :git => "git://github.com/lennart/sinatra-static-assets"
 gem "bcrypt-ruby", :require_as => "bcrypt"
 gem "uuid"
-gem "json"
+#gem "json"
 gem "rest-client"
 gem "rack-test", :only => :test, :require_as => "rack/test" 
 gem "rspec", :only => :test, :require_as => "spec"

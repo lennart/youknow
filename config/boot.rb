@@ -12,6 +12,7 @@ unless Object.const_defined? :SINATRA_ROOT
   SINATRA_ROOT=::File.expand_path(::File.join(::File.dirname(__FILE__),"..")) 
 end
 autoload :Album, "models/album"
+autoload :JSON, "yajl/json"
 autoload :MainHelper, "helper/main_helper.rb"
 autoload :Artist, "models/artist"
 autoload :Song, "models/song"
