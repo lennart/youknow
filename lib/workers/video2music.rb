@@ -29,19 +29,19 @@ module Video2Music
       video = YouTubeVideo.by_video_id(:key => video_id).first
       raise "YouTube Video Missing" if video.nil?
       destination = case YouTubeVideo.format_name(video.best_format)
-                    when "flv":
+                    when "flv" then
                       TO_OGG.call(source)
-                    when "flv#22.05Khz":
+                    when "flv#22.05Khz" then
                       COPY_AUDIO_STREAM.call(source)
-                    when "flv#44.1Khz":
+                    when "flv#44.1Khz" then
                       COPY_AUDIO_STREAM.call(source)
-                    when "flv@480p":
+                    when "flv@480p" then
                       TO_OGG.call(source)
-                    when "mp4":
+                    when "mp4" then
                       TO_OGG.call(source)
-                    when "mp4@720p":
+                    when "mp4@720p" then
                       TO_OGG.call(source)
-                    when "mp4@1080p":
+                    when "mp4@1080p" then
                       TO_OGG.call(source)
                     else
                       COPY_AUDIO_STREAM.call(source)

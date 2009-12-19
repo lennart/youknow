@@ -11,9 +11,9 @@ class SongImporter
     end
     mode ||= :file 
     case mode
-    when :http:
+    when :http then
       SongGenerator.add_song_from_url(uri.to_s, Metadata.new(metadata))
-    when :file:
+    when :file then
       if morph_source
         SongGenerator.add_song(File.new(uri.to_s),Metadata.new(metadata), YouTubeVideo.by_video_id(:key => morph_source).first)
       else

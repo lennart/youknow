@@ -33,10 +33,10 @@ class BlipFM
         meta.blip = blip["message"]
         meta.reblip_id = blip["reblipId"]
         case blip["type"]
-        when "youtubeVideo":
+        when "youtubeVideo" then
           meta.video_id = blip["url"]
           meta.source = "YouTube"
-        when "songUrl":
+        when "songUrl" then
           meta.url = blip["url"]
           meta.source = "HTTP"
         end

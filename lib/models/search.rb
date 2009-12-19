@@ -60,7 +60,7 @@ class Search
       ::SiteConfig.database.bulk_load(results)["rows"].map do |row|
         doc = row["doc"]
         case doc["source"]
-        when "YouTube":
+        when "YouTube" then
           YouTubeVideo.new doc
         else
           SearchResult.new doc
