@@ -9,4 +9,4 @@
       %ul.formats
         - if result.respond_to? :available_streams
           - result.available_streams.each do |stream_id, stream_url|
-            %li=YouTubeVideo.format_name stream_id
+            %li=YouTubeVideo.format_name stream_id.to_i

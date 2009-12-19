@@ -9,7 +9,8 @@ module Downloader
       source, destination, options = params
       link = source
       can_be_converted = false
-      source = YouTubeVideo.new source 
+      source = YouTubeVideo.by_video_id(:key => source).first
+      raise "YouTube Video missing" unless source
       link = source.deep_link options["format"]
       can_be_converted = true
       name = options["format"]
