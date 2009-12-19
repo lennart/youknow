@@ -14,7 +14,7 @@ describe "The Video to Music Thingy" do
     audio = @audio_path
     video = YouTubeVideo.new
     YouTubeVideo.expects(:by_video_id).returns([video])
-    video.expects(:best_format).returns("18")
+    video.expects(:best_format).returns(18)
     Resque.expects(:enqueue)
     Video2Music.perform(["some id",video_path,Metadata.new(:title => "Come Home",:artist => "Placebo")])
     File.exists?(audio).should == true

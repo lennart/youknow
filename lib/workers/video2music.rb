@@ -28,7 +28,7 @@ module Video2Music
       video_id, source, metadata = params
       video = YouTubeVideo.by_video_id(:key => video_id).first
       raise "YouTube Video Missing" if video.nil?
-      destination = case YouTubeVideo.format_name(video.best_format)
+      destination = case video.best_format_name
                     when "flv" then
                       TO_OGG.call(source)
                     when "flv#22.05Khz" then

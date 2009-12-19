@@ -21,7 +21,6 @@ class SongGenerator
       threads, metadata = prepare_for_import(tag)
       begin
         threads.each { |t| t.join }
-        puts metadata.to_yaml
       rescue SongGeneratorError => e
         raise e
       end
