@@ -137,7 +137,7 @@ class YouTubeVideo < SearchResult
     options[:convert_to_audio] ||= false
     options[:format] = format 
     source = self
-    destination = ::File.join(SINATRA_ROOT,"tmp","#{UUID.generate :compact}.#{format_name(format))[0..2]}")
+    destination = ::File.join(SINATRA_ROOT,"tmp","#{UUID.generate :compact}.#{format_name(format)[0..2]}")
     Resque.enqueue(::Downloader,[source,destination,options])
   end
 end
