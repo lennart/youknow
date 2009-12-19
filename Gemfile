@@ -14,7 +14,7 @@ gem "rspec", :only => :test, :require_as => "spec"
 gem "cucumber", :only => :test
 gem "timecop", :only => :test
 gem "mocha", :only => :test
-gem "capybara" , :only => :test, :version => ">= 0.1.1"
+gem "capybara" , :only => :test, :branch => "0.2.0"
 gem "shared-mime-info", :git => "git://github.com/lennart/shared-mime-info.git"
 gem "curb", :git => "git://github.com/taf2/curb.git"
 gem "ruby-taglib2", :require_as => "taglib2"
