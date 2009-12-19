@@ -100,25 +100,24 @@ describe "A Song Generator" do
   context "generating a Song from YouTubeVideo" do
     before do
       @youtube_video_id = "someid"
-      @video = YouTubeVideo.new :video_id => @youtube_video_id
-      @video.save
+      @video = YouTubeVideo.new :video_id => @youtube_video_id, :title => "Fette Scheisse", :embed_url => "http://youtube.com/idid", :duration => 200
+      raise "Video couldn't be saved fix you test" unless @video.save
       @id = @video.id
-      @tag.album = ""
+      @tag.album = nil
       @tag.track = 0
       @song_id = SongGenerator.add_song(@tempfile,@tag,@video)
       @youtube_song = Song.get @song_id
     end
     it "should still find the YouTubeVideo" do
-      video = YouTubeVideo.get @id
-      video.video_id.should == @youtube_video_id
+      @song_id.should == @id 
     end
 
     it "should use same document for Song" do
-      @song_id.should == @youtube_video_id
+      @song_id.should == @id
+      YouTubeVideo.get(@id).video_id.should == @youtube_video_id
     end
 
     it "should have added artist 'Radiohead'" do
-      puts "Youtube Artist: #{@youtube_song.written_by.to_yaml}"
       artist = Artist.get @youtube_song.written_by.first
       artist.should be_kind_of(Artist)
       artist.name.should == "Radiohead"
@@ -126,7 +125,7 @@ describe "A Song Generator" do
   end
 
   specify "should not generate song with missing artist" do
-    @tag.artist = ""
+    @tag.artist = nil
     lambda { SongGenerator.add_song(@tempfile, @tag) }.should raise_error(SongGeneratorError) { |error| error.reason[:missing].should == :artist }
   end
 
@@ -136,7 +135,7 @@ describe "A Song Generator" do
   end
 
   specify "should not generate song with missing title" do
-    @tag.title = ""
+    @tag.title = nil
     lambda { SongGenerator.add_song(@tempfile, @tag) }.should raise_error(SongGeneratorError) { |error| error.reason[:missing].should == :title }
   end
 

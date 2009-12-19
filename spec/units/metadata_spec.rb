@@ -8,6 +8,11 @@ describe "The one and only Metadata" do
   end
 
   it "should let one add arbitrary properties" do
+    Metadata.class_eval do
+      undef video_id
+      undef video_id=
+      properties.delete properties.select{|p| p.name == "video_id" }.first
+    end
     lambda { @meta.video_id }.should raise_error(NoMethodError)
     @meta.video_id= "FunkyVideoId"
     @meta.video_id.should == "FunkyVideoId"
