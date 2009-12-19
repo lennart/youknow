@@ -5,6 +5,7 @@ unless Object.const_defined? :SINATRA_ROOT
   else
     Bundler.require_env
   end
+  require 'ferret'
 
   $LOAD_PATH.unshift(::File.join(::File.dirname(__FILE__), *%w{.. lib}))
   SINATRA_ROOT=::File.expand_path(::File.join(::File.dirname(__FILE__),"..")) 
