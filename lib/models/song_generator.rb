@@ -81,7 +81,7 @@ class SongGenerator
                else
                  a = Song.new  :title => title
                end
-               a.appears_on_album = { metadata.filter.album.id => track } if track
+               a.appears_on_album = { metadata.filter.album.id => track } if track != 0
                a.written_by = [metadata.filter.artist.id]
                if tag.genre
                  a.tags ||= []
@@ -101,7 +101,7 @@ class SongGenerator
              else
                song = potential_songs.first
                unless song.appears_on_album
-                 song.appears_on_album = { metadata.filter.album.id => track } if track
+                 song.appears_on_album = { metadata.filter.album.id => track } if track != 0
                else
                  song.appears_on_album[metadata.filter.album.id] = track if track and metadata.filter.album.id
                end
