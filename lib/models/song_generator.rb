@@ -68,6 +68,15 @@ class SongGenerator
       raise SongGeneratorError.new({:missing => :title}) if (title = tag.title).blank?
     end
 
+    def add_album_to_song song, album = nil, track = nil
+      raise SongGeneratorError.new({:missing => :album}) unless track.is_a?(Integer) and track != 0 and not album.nil?
+      if song.appears_on_album and not song.appears_on_album.empty?
+        song.appears_on_album[album.id] = track
+      else
+        song.appears_on_album = { album.id => track } 
+      end
+    end
+
     def find_or_create_song_by_name(tag, metadata, morph_source = nil)
       title = tag.title.strip
       track = tag.track
@@ -80,13 +89,12 @@ class SongGenerator
                else
                  a = Song.new  :title => title
                end
-		raise SongGeneratorError.new(tag.to_yaml) if metadata.filter.album.nil?
-                a.appears_on_album = { metadata.filter.album.id => track }
+               add_album_to_song a, metadata.filter.album, track
                a.written_by = [metadata.filter.artist.id]
                if tag.genre
                  a.tags ||= []
                  if tag.genre.kind_of?(Array)
-                 a.tags.concat tag.genre
+                   a.tags.concat tag.genre
                  else
                    a.tags << tag.genre
                  end
@@ -100,13 +108,7 @@ class SongGenerator
                a
              else
                song = potential_songs.first
-               if track != 0
-                 unless song.appears_on_album
-                   song.appears_on_album = { metadata.filter.album.id => track } 
-                 else
-                   song.appears_on_album[metadata.filter.album.id] = track
-                 end
-               end
+               add_album_to_song song, metadata.filter.album, track
              end
       song
     end
