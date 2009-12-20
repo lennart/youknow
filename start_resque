@@ -1,0 +1,2 @@
+#!/bin/sh
+RACK_ENV="production" COUNT=10 QUEUE=high,medium,default ./bin/rake resque:workers
