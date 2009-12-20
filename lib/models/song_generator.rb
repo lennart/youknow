@@ -69,11 +69,13 @@ class SongGenerator
     end
 
     def add_album_to_song song, album = nil, track = nil
-      raise SongGeneratorError.new({:missing => :album}) unless track.is_a?(Integer) and track != 0 and not album.nil?
-      if song.appears_on_album and not song.appears_on_album.empty?
-        song.appears_on_album[album.id] = track
-      else
-        song.appears_on_album = { album.id => track } 
+      unless album.nil?
+        raise SongGeneratorError.new({:missing => :album}) unless track.is_a?(Integer) and track != 0 
+        if song.appears_on_album and not song.appears_on_album.empty?
+          song.appears_on_album[album.id] = track
+        else
+          song.appears_on_album = { album.id => track } 
+        end
       end
     end
 
