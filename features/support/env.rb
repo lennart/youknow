@@ -8,7 +8,7 @@ Sinatra::Application.app_file = app_file
 
 require 'spec/expectations'
 require 'capybara/cucumber'
-CouchRest.new(SiteConfig.url_base).database!(SiteConfig.database_name).recreate!
+CouchRest.new(SiteConfig.couchdb_host).database!(SiteConfig.database_name).recreate!
 Capybara.app = ModularApplication
 class MyWorld
   include Rack::Test::Methods
