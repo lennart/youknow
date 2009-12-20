@@ -11,7 +11,7 @@ module Downloader
         :convert_to_audio => options["convert_to_audio"]
       meta.source = YouTubeVideo.by_video_id(:key => source_id).first
 
-      raise DownloaderError.new "YouTube Video missing" unless meta.source
+      raise DownloaderError.new "YouTube Video with Video ID #{source_id} missing" unless meta.source
       meta.link = meta.source.deep_link options["format"]
       meta.destination = destination
       meta.attachment_name = YouTubeVideo.format_name(options["format"].to_i)

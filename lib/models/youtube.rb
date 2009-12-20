@@ -13,7 +13,7 @@ load 'models/search_result.rb'
 class YouTubeStreamMissingError < RuntimeError
 end
 class YouTubeVideo < SearchResult
-  ducktype_traits :title, :embed_url, :duration, :available_streams
+  ducktype_traits :title, :embed_url, :available_streams
   include MorphableDocument
   include CouchRest::Validation
   include Guessing
@@ -21,7 +21,7 @@ class YouTubeVideo < SearchResult
   property :available_streams, :default => {}
 
   view_by :video_id, :ducktype => true
-  validates_presence_of :title, :embed_url, :duration, :video_id
+  validates_presence_of :title, :embed_url, :video_id
 
   def self.format_name id
     raise "#{id} is not an Integer" unless id.is_a?(Integer)
