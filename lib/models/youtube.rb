@@ -140,7 +140,7 @@ class YouTubeVideo < SearchResult
     options[:format] = format 
     source = self
     destination = ::File.join(SINATRA_ROOT,"tmp","#{UUID.generate :compact}.#{format_name(format)[0..2]}")
-    Resque.enqueue(::Downloader,[source,destination,options])
+    Resque.enqueue(::Downloader,[source.video_id,destination,options])
   end
 end
 
