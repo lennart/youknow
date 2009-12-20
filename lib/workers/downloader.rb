@@ -7,7 +7,7 @@ module Downloader
   class << self
     def prepare_params source_id, destination, options
       raise DownloaderError.new "YouTube Video ID missing or invalid" unless source_id and source_id.kind_of?(String)
-      meta = OpenStruct.new :destination => destination, :data => options["metadata"],
+      meta = OpenStruct.new :destination => destination, :data => Metadata.new(options["metadata"]),
         :convert_to_audio => options["convert_to_audio"]
       meta.source = YouTubeVideo.by_video_id(:key => source_id).first
 

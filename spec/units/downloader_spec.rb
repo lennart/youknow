@@ -1,5 +1,7 @@
 def perform metadata, id = "Some Id", path = @tempfile_path, options = {}
-  options.merge!({"metadata" => metadata }) 
+  if metadata
+    options.merge!({"metadata" => Hash.new.merge(metadata) }) 
+  end
   options["convert_to_audio"] ||= false
   options["format"] || 18
   ::Downloader.perform([id, path, options])
@@ -8,7 +10,7 @@ end
 def generic_song passed_keys = {}
   @video = stub_everything("youtube video", :deep_link => @video_url)
   YouTubeVideo.expects(:by_video_id).returns([@video])
-  Metadata.new :title => "Some Title", :artist => "Some Artist"
+  Metadata.new(:title => "Some Title", :artist => "Some Artist")
 end
 
 describe "The YouTube Video Downloader" do
@@ -24,7 +26,7 @@ describe "The YouTube Video Downloader" do
       metadata = generic_song
 
       meta = ::Downloader.prepare_params("some ID",@tempfile_path, {"convert_to_audio" => false,
-                                         "metadata" => metadata,
+                                         "metadata" => Hash.new(metadata.to_hash),
                                          "format" => 18})
 
       meta.link.should be_kind_of(String)
