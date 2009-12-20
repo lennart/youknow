@@ -5,38 +5,49 @@ module Downloader
   @queue = :default
 
   class << self
-    def perform(params)
-      source, destination, options = params
-      link = source
-      can_be_converted = false
-      source = YouTubeVideo.by_video_id(:key => source).first
-      raise "YouTube Video missing" unless source
-      link = source.deep_link options["format"]
-      can_be_converted = true
-      name = options["format"]
-      content_type = "video/mp4"
-      name =~ /(^[0-9A-Za-z]{3})/
+    def prepare_params source_id, destination, options
+      raise DownloaderError.new "YouTube Video ID missing" unless source_id
+      meta = OpenStruct.new :destination => destination, :data => options["metadata"],
+        :convert_to_audio => options["convert_to_audio"]
+      meta.source = YouTubeVideo.by_video_id(:key => source_id).first
+
+      raise DownloaderError.new "YouTube Video missing" unless meta.source
+      meta.link = meta.source.deep_link options["format"]
+      meta.destination = destination
+      meta.attachment_name = YouTubeVideo.format_name(options["format"].to_i)
+      meta.attachment_content_type = "video/mp4"
+      meta.attachment_name =~ /(^[0-9A-Za-z]{3})/
         if $1 == "flv"
-          content_type = "video/x-flv"
+          meta.attachment_content_type = "video/x-flv"
         end
-      unless source.has_attachment? name
+      meta
+    end
+
+    def fetch_video_file source, link, destination, attachment_name, attachment_content_type 
+      attachment = nil
+      unless source.has_attachment? attachment_name
         attachment = CurbToCouch.download(link, destination)
-        source.put_attachment(name,attachment.read,:content_type => content_type)
+        source.put_attachment(attachment_name,attachment.read,:content_type => attachment_content_type)
       else
         f = File.new destination, "w"
-        f.write source.fetch_attachment(name)
+        f.write source.fetch_attachment(attachment_name)
         f.close
       end
-      if options["convert_to_audio"] and can_be_converted
-        if options["metadata"].nil? or options["metadata"]["artist"].blank?
+      attachment
+    end
+
+    def perform(params)
+      meta = prepare_params(*params)
+      attachment = fetch_video_file meta.source, meta.link, meta.destination, meta.attachment_name, meta.attachment_content_type
+      if meta.convert_to_audio
+        if meta.data.nil? or meta.data.artist.blank?
           raise DownloaderError.new("Cannot Convert to Song, since Artist is missing")
         else
           Resque.enqueue(Video2Music,
-                         [source.video_id, 
-                           destination, 
-                           options["metadata"]])
+                         [meta.source.video_id, 
+                           meta.destination, 
+                           meta.data])
         end
-
       else
         File.unlink(attachment.path)
       end
