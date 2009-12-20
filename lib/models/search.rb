@@ -18,7 +18,7 @@ class Search
         threads << Thread.new(video) do |video|
           result = YouTubeVideo.new video 
           if result.save
-            @results << result
+            @results << Metadata.new(result)
           end
         end
       end
@@ -59,12 +59,7 @@ class Search
       end
       ::SiteConfig.database.bulk_load(results)["rows"].map do |row|
         doc = row["doc"]
-        case doc["source"]
-        when "YouTube" then
-          YouTubeVideo.new doc
-        else
-          SearchResult.new doc
-        end
+          Metadata.new doc
       end
     end
   end

@@ -1,12 +1,19 @@
-%h1="Music Video Search results"
-%ul#results
-  -results.each do |result|
+%h1="Music Video Search metas"
+%ul#metas
+  %script{:type => "text/javascript"}
+    = "var videos = {};"
+  -results.each do |meta|
     %li
-      %a{ :href => "#", :onClick => "addVideo('#{url_for("/downloader/")}', #{result.to_json});" }
-        =result.title 
+      %script{:type => "text/javascript"}
+        ="videos['#{meta.video_id}'] = #{meta.to_json};"
+      =meta.title 
       #video
-        %embed{ :src => result.embed_url }
+        %embed{ :src => meta.embed_url }
+      %a{ :href => "#", :onClick => "download('#{url_for("/downloader/")}', videos['#{meta.video_id}']);" }
+        Download Video
+      %a{ :href => "#", :onClick => "downloadAndConvert('#{url_for("/downloader/")}', videos['#{meta.video_id}']);" }
+        Download Video and add as Song
       %ul.formats
-        - if result.respond_to? :available_streams
-          - result.available_streams.each do |stream_id, stream_url|
+        - if meta.respond_to? :available_streams
+          - meta.available_streams.each do |stream_id, stream_url|
             %li=YouTubeVideo.format_name stream_id.to_i
