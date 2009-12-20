@@ -12,6 +12,15 @@ describe "A YouTube Video form the API" do
       @video_from_model.video_id.should_not be_nil
     end
 
+    it "should update volatile properties" do
+      video = YouTubeVideo.new :video_id => "random"
+      html = File.read(sinatra("utils","youtube_result.html"))
+      Curl::Easy.expects(:perform).with("www.youtube.com/watch?v=random").returns(stub_everything("video",:body_str => html))
+
+      video.update_volatile_properties
+      video.deep_links_expire_at.should_not be_nil
+    end
+
     it "should set expire dates" do
       @video_from_model.deep_links_expire_at(:time).should be_kind_of(Time)
     end

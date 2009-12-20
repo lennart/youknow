@@ -48,7 +48,7 @@ class YouTubeVideo < SearchResult
 
   def deep_links_expire_at(format = :timestamp)
     if format == :timestamp
-      self["deep_links_expire_at"].to_i
+      self["deep_links_expire_at"].nil? ? nil : self["deep_links_expire_at"].to_i
     else
       self["deep_links_expire_at"]
     end
@@ -102,7 +102,9 @@ class YouTubeVideo < SearchResult
   end
 
   def parse_expire url
-    URI.unescape((URI.parse url).query) =~ /expire=([0-9]+)&/
+    uri = URI.parse url
+    raise "Query missing #{url}" unless uri.query
+    URI.unescape(uri.query) =~ /expire=([0-9]+)&/
       self.deep_links_expire_at = $1
     save
   end
