@@ -50,7 +50,7 @@ class SongGenerator
 
     def prepare_for_import tag, threads = [], metadata = OpenStruct.new(:filter => OpenStruct.new)
       check_metadata(tag)
-      unless tag.album.blank? or tag.track == 0
+      if not tag.album.blank? and tag.track != 0
         threads << Thread.new(metadata) do |metadata|
           metadata.filter.album = find_or_create_album_by_title(tag)
         end
@@ -80,7 +80,9 @@ class SongGenerator
                else
                  a = Song.new  :title => title
                end
-               a.appears_on_album = { metadata.filter.album.id => track } if track != 0
+               if track != 0
+                a.appears_on_album = { metadata.filter.album.id => track }
+               end
                a.written_by = [metadata.filter.artist.id]
                if tag.genre
                  a.tags ||= []
@@ -99,10 +101,12 @@ class SongGenerator
                a
              else
                song = potential_songs.first
-               unless song.appears_on_album
-                 song.appears_on_album = { metadata.filter.album.id => track } if track != 0
-               else
-                 song.appears_on_album[metadata.filter.album.id] = track if track and metadata.filter.album.id
+               if track != 0
+                 unless song.appears_on_album
+                   song.appears_on_album = { metadata.filter.album.id => track } 
+                 else
+                   song.appears_on_album[metadata.filter.album.id] = track
+                 end
                end
              end
       song
