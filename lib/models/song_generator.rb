@@ -105,7 +105,7 @@ class SongGenerator
                raise SongGeneratorError.new({:missing => :all}) unless a.save
                unless a.has_attachment?("audio/default")
                  data = yield 
-                 mimetype = data.respond_to? :path ? MIME.check_magics(data.path) : "audio/mpeg"
+                 mimetype = MIME.check_magics(data).type || "audio/mpeg"
                  a.put_attachment "audio/default", data.read, :content_type => mimetype.to_s
                end
                a
