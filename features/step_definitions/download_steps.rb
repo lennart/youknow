@@ -14,7 +14,7 @@ Then /^I should have the Song in my Library$/ do
   @worker.process
   @worker.process
   job = Resque.reserve :medium
-  @worker.process
+  @worker.process(job)
 
   Resque::Failure.count.should == 0
   video = YouTubeVideo.by_video_id(:key => "2ds_MpPdH5o").first
