@@ -6,11 +6,11 @@ libs = []
 libs << "irb/completion"
 libs << "rubygems"
 libs << File.join(File.dirname(__FILE__),*%w{.. config boot})
-libs << File.join(File.dirname(__FILE__),*%w{.. config app_config})
+libs << File.join(File.dirname(__FILE__),*%w{.. config environment})
 
 
 command_line = []
-command_line << "irb -rubygems"
+command_line << "irb"
 command_line << libs.inject("") { |acc, lib| acc + %( -r "#{lib}") }
 command_line << "--simple-prompt"
 command = command_line.join(" ")

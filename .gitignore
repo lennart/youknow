@@ -4,6 +4,8 @@ tags
 *.swo
 log/*
 tmp/*
+bin/*
+config/environment.rb
 Capfile
 config/deploy.rb
 vendor/gems/*

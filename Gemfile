@@ -1,16 +1,15 @@
-#vim: filetype=ruby
+source "http://gems.github.com"
 gem "sinatra", :git => "git://github.com/sinatra/sinatra"
-gem "couchrest", :git => "git://github.com/jchris/couchrest"
+gem "couchrest", :git => "git://github.com/lennart/couchrest"
 gem "emk-sinatra-url-for", :require_as => "sinatra/url_for" 
 gem "sinatra-static-assets", :require_as => "sinatra/static_assets", :git => "git://github.com/lennart/sinatra-static-assets"
-gem "bcrypt-ruby", :require_as => "bcrypt"
-gem "uuid"
-gem "json"
-gem "rest-client"
-gem "rack-test", :only => :test, :require_as => "rack/test"
-gem "rspec", :only => :test
-gem "cucumber", :only => :test
-gem "timecop", :only => :test
-gem "mocha", :only => :test
-gem "capybara" , :only => :test, :version => ">= 0.1.1"
-gem "shared-mime-info", :git => "git://github.com/lennart/shared-mime-info.git"
+
+only :test do
+  gem "rack-test", :require_as => "rack/test"
+  gem "rspec"
+  gem "cucumber"
+  gem "timecop"
+  gem "mocha"
+  gem "capybara", :branch => "0.2.0"
+end
+# vim:filetype=ruby
