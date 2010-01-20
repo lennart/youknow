@@ -7,6 +7,7 @@ require 'fileutils'
 desc "Run all specs"
 Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_opts = File.read("spec/spec.opts").split(/\n/)
+  t.spec_opts  << "-rspec/spec_helper"
   t.spec_files = FileList["spec/**/*_spec.rb"]
 end
 
@@ -16,6 +17,7 @@ namespace :spec do
     desc "Run #{folder} specs"
     Spec::Rake::SpecTask.new(folder) do |t|
       t.spec_opts = File.read("spec/spec.opts").split(/\n/)
+      t.spec_opts  << "-rspec/spec_helper"
       t.spec_files = FileList["spec/#{folder}/*_spec.rb"]
     end
   end
