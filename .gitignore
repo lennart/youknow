@@ -1,13 +1,10 @@
 *.log
+tags
 *.swp
 *.swo
 log/*
 tmp/*
 Capfile
 config/deploy.rb
-vendor/gems/gems
-vendor/gems/doc
-vendor/gems/dirs
-vendor/gems/specifications
-vendor/gems/environment.rb
-
+vendor/gems/*
+!vendor/gems/cache
