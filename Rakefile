@@ -1,16 +1,27 @@
+require "config/boot"
 require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 require 'erb'
 require 'fileutils'
 
-
-desc "Test with rspec"
+desc "Run all specs"
 Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_opts = File.read("spec/spec.opts").split(/\n/)
-  t.spec_files = FileList["spec/*_spec.rb"]
+  t.spec_files = FileList["spec/**/*_spec.rb"]
 end
 
-desc "Test with Cucumber+Watir"
+namespace :spec do
+  Dir["spec/*"].select {|d| File.directory? d }.each do |dir|
+    folder = File.basename dir
+    desc "Run #{folder} specs"
+    Spec::Rake::SpecTask.new(folder) do |t|
+      t.spec_opts = File.read("spec/spec.opts").split(/\n/)
+      t.spec_files = FileList["spec/#{folder}/*_spec.rb"]
+    end
+  end
+end
+
+desc "Test with Cucumber"
 Cucumber::Rake::Task.new("cucumber") do |t|
   t.cucumber_opts = %w{--format pretty features}
 end

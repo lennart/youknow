@@ -1,4 +1,7 @@
 unless Object.const_defined? :SINATRA_ROOT
+  $LOAD_PATH.unshift(::File.join(::File.dirname(__FILE__), *%w{.. lib}))
+  SINATRA_ROOT=::File.expand_path(::File.join(::File.dirname(__FILE__),"..")) 
+
   class String
     def blank?
       self.nil? || self.strip == ""
@@ -18,6 +21,10 @@ unless Object.const_defined? :SINATRA_ROOT
       self.nil? || self == ""
     end
   end
+  
+  def sinatra(*path_components)
+    ::File.join(SINATRA_ROOT,*path_components)
+  end
 
   require File.expand_path(File.join(File.dirname(__FILE__),%w{.. vendor gems environment}))
 
@@ -26,9 +33,6 @@ unless Object.const_defined? :SINATRA_ROOT
   else
     Bundler.require_env
   end
-
-  $LOAD_PATH.unshift(::File.join(::File.dirname(__FILE__), *%w{.. lib}))
-  SINATRA_ROOT=::File.expand_path(::File.join(::File.dirname(__FILE__),"..")) 
 end
 
 Dir[File.join(File.dirname(__FILE__),%w{.. lib ** *.rb})].each do |path|
