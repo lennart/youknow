@@ -42,4 +42,7 @@ task :reset do
   if File.exists?("config/environment.rb")
     FileUtils.rm "config/environment.rb", :verbose => true
   end
+  %w{app tmp log}.each do |dir|
+    FileUtils.mkdir sinatra(dir), :verbose => true unless File.exists? sinatra(dir)
+  end
 end
