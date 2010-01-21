@@ -24,7 +24,7 @@ namespace :spec do
 end
 
 desc "Test with Cucumber"
-Cucumber::Rake::Task.new("cucumber") do |t|
+Cucumber::Rake::Task.new("features") do |t|
   t.cucumber_opts = %w{--format pretty features}
 end
 

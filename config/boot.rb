@@ -35,6 +35,11 @@ unless Object.const_defined? :SINATRA_ROOT
   end
 end
 
+Dir[File.join(File.dirname(__FILE__),%w{.. app ** *.rb})].each do |path|
+  klass = File.basename(path,File.extname(path)).camelize.to_sym
+  autoload klass, path
+end
+
 Dir[File.join(File.dirname(__FILE__),%w{.. lib ** *.rb})].each do |path|
   klass = File.basename(path,File.extname(path)).camelize.to_sym
   autoload klass, path
