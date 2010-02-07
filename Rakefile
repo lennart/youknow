@@ -57,7 +57,7 @@ namespace :compass do
   end
 
   desc "Compass Watching"
-  task :watch => :update do
+  task :watch do
     ARGV=%w{-c config/compass.config -w} << ROOT_DIR
     load 'bin/compass'
   end
