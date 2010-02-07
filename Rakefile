@@ -3,7 +3,7 @@ require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 require 'erb'
 require 'fileutils'
-
+ROOT_DIR = File.expand_path(File.dirname(__FILE__))
 desc "Run all specs"
 Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_opts = File.read("spec/spec.opts").split(/\n/)
@@ -51,20 +51,20 @@ end
 
 namespace :compass do
   desc "Compass Update" 
-  task :watch => :update do
-    ARGV=%w{-c config/compass.config -u} << __FILE__
+  task :update do
+    ARGV=%w{-c config/compass.config -u} << ROOT_DIR
     load 'bin/compass'
   end
 
   desc "Compass Watching"
   task :watch => :update do
-    ARGV=%w{-c config/compass.config -w} << __FILE__
+    ARGV=%w{-c config/compass.config -w} << ROOT_DIR
     load 'bin/compass'
   end
 
   desc "Compass Setup"
   task :setup do
-    ARGV=%w{-c config/compass.config} << __FILE__
+    ARGV=%w{-c config/compass.config} << ROOT_DIR
     load 'bin/compass'
   end
 end

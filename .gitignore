@@ -1,4 +1,5 @@
 *.log
+config.rb
 .sass-cache/
 tags
 *.swp
