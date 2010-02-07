@@ -34,6 +34,7 @@ unless Object.const_defined? :SINATRA_ROOT
     Bundler.require_env
   end
 end
+require 'open-uri'
 
 Dir[File.join(File.dirname(__FILE__),%w{.. app ** *.rb})].each do |path|
   klass = File.basename(path,File.extname(path)).camelize.to_sym

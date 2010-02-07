@@ -30,9 +30,9 @@ end
 
 desc "Setup new Environment"
 task :setup => :reset do
-  title = "sinatra-couchbase"
+  title = "youknow"
   author = "Lennart Melzer"
-  environments = %w{development test integration production}
+  environments = %w{development test production}
   template = ERB.new File.read("config/environment.rb.erb")
   File.open "config/environment.rb", "w" do |f|
     f.write template.result(binding)
@@ -46,5 +46,25 @@ task :reset do
   end
   %w{app tmp log}.each do |dir|
     FileUtils.mkdir sinatra(dir), :verbose => true unless File.exists? sinatra(dir)
+  end
+end
+
+namespace :compass do
+  desc "Compass Update" 
+  task :watch => :update do
+    ARGV=%w{-c config/compass.config -u} << __FILE__
+    load 'bin/compass'
+  end
+
+  desc "Compass Watching"
+  task :watch => :update do
+    ARGV=%w{-c config/compass.config -w} << __FILE__
+    load 'bin/compass'
+  end
+
+  desc "Compass Setup"
+  task :setup do
+    ARGV=%w{-c config/compass.config} << __FILE__
+    load 'bin/compass'
   end
 end

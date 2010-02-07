@@ -7,23 +7,17 @@ configure do
     :title => "<%= title %>",
     :author => "<%= author %>"
   )
+  Compass.configuration.parse(File.join(SINATRA_ROOT, 'config', 'compass.config'))
+  set :haml, { :format => :html5 }
+  set :sass, Compass.sass_engine_options
+
 end
 
 <% environments.each do |env| %>
-configure :<%= env %> do
-  SiteConfig.couchdb_host = 'http://localhost:5984'
-  SiteConfig.database_name = '<%= title.gsub(/[^0-9a-zA-Z]/,"_") %>_<%= env %>'
-end
+  configure :<%= env %> do
+  end
 <% end %>
 
 configure do
-  unless SiteConfig.couchdb_host and SiteConfig.database_name
-    raise <<-NOTICE
-  Please set 'SiteConfig.couchdb_host' and 'SiteConfig.database_name' 
-  in #{__FILE__} for #{Sinatra::Application.environment} Environment"
-    NOTICE
-  else
-    SiteConfig.database = CouchRest.new(SiteConfig.couchdb_host).database!(SiteConfig.database_name)
-  end
 end
 # vim:filetype=eruby

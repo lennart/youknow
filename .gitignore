@@ -1,4 +1,5 @@
 *.log
+.sass-cache/
 tags
 *.swp
 *.swo
@@ -10,3 +11,4 @@ Capfile
 config/deploy.rb
 vendor/gems/*
 !vendor/gems/cache
+public/stylesheets/
