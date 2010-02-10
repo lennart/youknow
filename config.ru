@@ -3,7 +3,7 @@ log = ::File.new("log/sinatra.log", "a+")
 $stdout.reopen(log)
 $stderr.reopen(log)
 
-require ::File.join(::File.dirname(__FILE__), *%w{config boot})
+#require ::File.join(::File.dirname(__FILE__), *%w{config boot})
 require ::File.join(::File.dirname(__FILE__), *%w{config environment})
 require ::File.dirname(__FILE__) + "/main.rb"
 
