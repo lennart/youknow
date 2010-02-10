@@ -63,6 +63,9 @@
 =serif-family
   :font-family Baskerville, Palatino, serif 
 
+=typewriter-family
+  :font-family Menlo, Monaco, "Bitstream Vera Sans Mono", "Courier New", monospace
+
 // Remember to add default styles to everything!
 
 body
@@ -181,6 +184,7 @@ blockquote
 pre
   :margin= !base_line_height
   :color= !quiet_color
+  +typewriter-family
 
 /* @end */
 
