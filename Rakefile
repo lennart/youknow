@@ -32,7 +32,7 @@ desc "Setup new Environment"
 task :setup => :reset do
   title = "youknow"
   author = "Lennart Melzer"
-  environments = %w{development test production}
+  environments = %w{production}
   template = ERB.new File.read("config/environment.rb.erb")
   File.open "config/environment.rb", "w" do |f|
     f.write template.result(binding)
@@ -44,7 +44,7 @@ task :reset do
   if File.exists?("config/environment.rb")
     FileUtils.rm "config/environment.rb", :verbose => true
   end
-  %w{app tmp log}.each do |dir|
+  %w{app tmp log public}.each do |dir|
     FileUtils.mkdir sinatra(dir), :verbose => true unless File.exists? sinatra(dir)
   end
 end

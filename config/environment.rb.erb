@@ -2,7 +2,7 @@
 # and rerun `rake setup`
 require 'ostruct'
 
-configure do
+Sinatra::Base.configure do
   SiteConfig = OpenStruct.new(
     :title => "<%= title %>",
     :author => "<%= author %>"
@@ -14,10 +14,7 @@ configure do
 end
 
 <% environments.each do |env| %>
-  configure :<%= env %> do
+  Sinatra::Base.configure :<%= env %> do
   end
 <% end %>
-
-configure do
-end
 # vim:filetype=eruby
