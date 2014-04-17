@@ -1,5 +1,7 @@
 youknow
 =======
+__ABANDONED:__ Development is discontinued, I'll be using the idea elsewhere though.
+
 Because you already know. 
 
 What is this?
